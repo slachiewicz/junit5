@@ -22,11 +22,13 @@ import org.junit.jupiter.api.Test;
  * @since 5.1
  */
 @Disabled("Disabled since the required environment variable is not set")
-// Tests will pass if you set the following environment variable:
-// EnabledIfEnvironmentVariableTests.key = EnabledIfEnvironmentVariableTests.enigma
+// Tests will pass if you set the following environment variables:
+//EnabledIfEnvironmentVariableTests.key1 = EnabledIfEnvironmentVariableTests.enigma
+//EnabledIfEnvironmentVariableTests.key2 = EnabledIfEnvironmentVariableTests.enigma
 class EnabledIfEnvironmentVariableIntegrationTests {
 
-	static final String KEY = "EnabledIfEnvironmentVariableTests.key";
+	static final String KEY1 = "EnabledIfEnvironmentVariableTests.key1";
+	static final String KEY2 = "EnabledIfEnvironmentVariableTests.key2";
 	static final String ENIGMA = "EnabledIfEnvironmentVariableTests.enigma";
 	static final String BOGUS = "EnabledIfEnvironmentVariableTests.bogus";
 
@@ -43,24 +45,32 @@ class EnabledIfEnvironmentVariableIntegrationTests {
 
 	@Test
 	@Disabled("Only used in a unit test via reflection")
-	@EnabledIfEnvironmentVariable(named = KEY, matches = "  ")
+	@EnabledIfEnvironmentVariable(named = KEY1, matches = "  ")
 	void blankMatchesAttribute() {
 	}
 
 	@Test
-	@EnabledIfEnvironmentVariable(named = KEY, matches = ENIGMA)
+	@EnabledIfEnvironmentVariable(named = KEY1, matches = ENIGMA)
 	void enabledBecauseEnvironmentVariableMatchesExactly() {
-		assertEquals(ENIGMA, System.getenv(KEY));
+		assertEquals(ENIGMA, System.getenv(KEY1));
 	}
 
 	@Test
-	@EnabledIfEnvironmentVariable(named = KEY, matches = ".+enigma$")
+	@EnabledIfEnvironmentVariable(named = KEY1, matches = ENIGMA)
+	@EnabledIfEnvironmentVariable(named = KEY2, matches = ENIGMA)
+	void enabledBecauseBothEnvironmentVariablesMatchExactly() {
+		assertEquals(ENIGMA, System.getProperty(KEY1));
+		assertEquals(ENIGMA, System.getProperty(KEY2));
+	}
+
+	@Test
+	@EnabledIfEnvironmentVariable(named = KEY1, matches = ".+enigma$")
 	void enabledBecauseEnvironmentVariableMatchesPattern() {
-		assertEquals(ENIGMA, System.getenv(KEY));
+		assertEquals(ENIGMA, System.getenv(KEY1));
 	}
 
 	@Test
-	@EnabledIfEnvironmentVariable(named = KEY, matches = BOGUS)
+	@EnabledIfEnvironmentVariable(named = KEY1, matches = BOGUS)
 	void disabledBecauseEnvironmentVariableDoesNotMatch() {
 		fail("should be disabled");
 	}

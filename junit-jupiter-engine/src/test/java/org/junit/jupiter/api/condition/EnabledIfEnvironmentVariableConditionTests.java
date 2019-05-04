@@ -13,7 +13,8 @@ package org.junit.jupiter.api.condition;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.condition.EnabledIfEnvironmentVariableIntegrationTests.ENIGMA;
-import static org.junit.jupiter.api.condition.EnabledIfEnvironmentVariableIntegrationTests.KEY;
+import static org.junit.jupiter.api.condition.EnabledIfEnvironmentVariableIntegrationTests.KEY1;
+import static org.junit.jupiter.api.condition.EnabledIfEnvironmentVariableIntegrationTests.KEY2;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExecutionCondition;
@@ -32,11 +33,11 @@ class EnabledIfEnvironmentVariableConditionTests extends AbstractExecutionCondit
 	/**
 	 * Stubbed subclass of {@link EnabledIfEnvironmentVariableCondition}.
 	 */
-	private static final ExecutionCondition condition = new EnabledIfEnvironmentVariableCondition() {
+	private ExecutionCondition condition = new EnabledIfEnvironmentVariableCondition() {
 
 		@Override
 		protected String getEnvironmentVariable(String name) {
-			return KEY.equals(name) ? ENIGMA : null;
+			return KEY1.equals(name) ? ENIGMA : null;
 		}
 	};
 
@@ -57,7 +58,7 @@ class EnabledIfEnvironmentVariableConditionTests extends AbstractExecutionCondit
 	void enabledBecauseAnnotationIsNotPresent() {
 		evaluateCondition();
 		assertEnabled();
-		assertReasonContains("@EnabledIfEnvironmentVariable is not present");
+		assertReasonContains("No 'disabled' @EnabledIfEnvironmentVariable conditions encountered");
 	}
 
 	/**
@@ -85,7 +86,25 @@ class EnabledIfEnvironmentVariableConditionTests extends AbstractExecutionCondit
 	void enabledBecauseEnvironmentVariableMatchesExactly() {
 		evaluateCondition();
 		assertEnabled();
-		assertReasonContains("matches regular expression");
+		assertReasonContains("No 'disabled' @EnabledIfEnvironmentVariable conditions encountered");
+	}
+
+	/**
+	 * @see EnabledIfEnvironmentVariableIntegrationTests#enabledBecauseBothEnvironmentVariablesMatchExactly()
+	 */
+	@Test
+	void enabledBecauseBothEnvironmentVariablesMatchExactly() {
+		this.condition = new EnabledIfEnvironmentVariableCondition() {
+
+			@Override
+			protected String getEnvironmentVariable(String name) {
+				return KEY1.equals(name) || KEY2.equals(name) ? ENIGMA : null;
+			}
+		};
+
+		evaluateCondition();
+		assertEnabled();
+		assertReasonContains("No 'disabled' @EnabledIfEnvironmentVariable conditions encountered");
 	}
 
 	/**
@@ -95,7 +114,7 @@ class EnabledIfEnvironmentVariableConditionTests extends AbstractExecutionCondit
 	void enabledBecauseEnvironmentVariableMatchesPattern() {
 		evaluateCondition();
 		assertEnabled();
-		assertReasonContains("matches regular expression");
+		assertReasonContains("No 'disabled' @EnabledIfEnvironmentVariable conditions encountered");
 	}
 
 	/**

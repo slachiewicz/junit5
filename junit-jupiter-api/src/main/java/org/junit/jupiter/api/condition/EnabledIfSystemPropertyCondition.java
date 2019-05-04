@@ -13,13 +13,11 @@ package org.junit.jupiter.api.condition;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
-import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 
-import java.util.Optional;
+import java.lang.reflect.AnnotatedElement;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.util.Preconditions;
 
 /**
@@ -28,21 +26,24 @@ import org.junit.platform.commons.util.Preconditions;
  * @since 5.1
  * @see EnabledIfSystemProperty
  */
-class EnabledIfSystemPropertyCondition implements ExecutionCondition {
+class EnabledIfSystemPropertyCondition extends AbstractRepeatableAnnotationCondition<EnabledIfSystemProperty> {
 
-	private static final ConditionEvaluationResult ENABLED_BY_DEFAULT = enabled(
-		"@EnabledIfSystemProperty is not present");
+	private static final ConditionEvaluationResult ENABLED = ConditionEvaluationResult.enabled(
+		"No 'disabled' @EnabledIfSystemProperty conditions encountered");
+
+	EnabledIfSystemPropertyCondition() {
+		super(EnabledIfSystemProperty.class);
+	}
 
 	@Override
-	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-		Optional<EnabledIfSystemProperty> optional = findAnnotation(context.getElement(),
-			EnabledIfSystemProperty.class);
+	protected ConditionEvaluationResult getNoConditionsEncounteredResult() {
+		return ENABLED;
+	}
 
-		if (!optional.isPresent()) {
-			return ENABLED_BY_DEFAULT;
-		}
+	@Override
+	protected ConditionEvaluationResult evaluate(EnabledIfSystemProperty annotation,
+			AnnotatedElement annotatedElement) {
 
-		EnabledIfSystemProperty annotation = optional.get();
 		String name = annotation.named().trim();
 		String regex = annotation.matches();
 		Preconditions.notBlank(name, () -> "The 'named' attribute must not be blank in " + annotation);

@@ -56,7 +56,7 @@ class EnabledIfSystemPropertyConditionTests extends AbstractExecutionConditionTe
 	void enabledBecauseAnnotationIsNotPresent() {
 		evaluateCondition();
 		assertEnabled();
-		assertReasonContains("@EnabledIfSystemProperty is not present");
+		assertReasonContains("No 'disabled' @EnabledIfSystemProperty conditions encountered");
 	}
 
 	/**
@@ -84,7 +84,17 @@ class EnabledIfSystemPropertyConditionTests extends AbstractExecutionConditionTe
 	void enabledBecauseSystemPropertyMatchesExactly() {
 		evaluateCondition();
 		assertEnabled();
-		assertReasonContains("matches regular expression");
+		assertReasonContains("No 'disabled' @EnabledIfSystemProperty conditions encountered");
+	}
+
+	/**
+	 * @see EnabledIfSystemPropertyIntegrationTests#enabledBecauseBothSystemPropertiesMatchExactly()
+	 */
+	@Test
+	void enabledBecauseBothSystemPropertiesMatchExactly() {
+		evaluateCondition();
+		assertEnabled();
+		assertReasonContains("No 'disabled' @EnabledIfSystemProperty conditions encountered");
 	}
 
 	/**
@@ -94,7 +104,7 @@ class EnabledIfSystemPropertyConditionTests extends AbstractExecutionConditionTe
 	void enabledBecauseSystemPropertyMatchesPattern() {
 		evaluateCondition();
 		assertEnabled();
-		assertReasonContains("matches regular expression");
+		assertReasonContains("No 'disabled' @EnabledIfSystemProperty conditions encountered");
 	}
 
 	/**
@@ -102,6 +112,13 @@ class EnabledIfSystemPropertyConditionTests extends AbstractExecutionConditionTe
 	 */
 	@Test
 	void disabledBecauseSystemPropertyDoesNotMatch() {
+		evaluateCondition();
+		assertDisabled();
+		assertReasonContains("does not match regular expression");
+	}
+
+	@Test
+	void disabledBecauseSystemPropertyOnComposedAnnotationDoesNotMatch() {
 		evaluateCondition();
 		assertDisabled();
 		assertReasonContains("does not match regular expression");
